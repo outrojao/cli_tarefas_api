@@ -1,10 +1,13 @@
-.PHONY: migrate rollback status create
+.PHONY: test migrate rollback status create
 
 MIGRATIONS_DIR := ./internal/database/migrations
 ENV_FILE := ./configs/.env
 
 -include $(ENV_FILE)
 export $(shell sed 's/=.*//' $(ENV_FILE) 2>/dev/null)
+
+test:
+	go test ./...
 
 migrate:
 	goose -dir $(MIGRATIONS_DIR) postgres "$(DB_URL)" up
