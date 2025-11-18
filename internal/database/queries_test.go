@@ -1,38 +1,17 @@
-package database
+package database_test
 
 import (
-	"log"
-	"os"
+	"cli_tasks_api/internal/database"
+	"cli_tasks_api/internal/utils"
 	"testing"
-
-	"github.com/joho/godotenv"
 )
 
-func setupTestDatabase(t *testing.T) {
-	if err := godotenv.Load("../../configs/.env"); err != nil {
-		log.Fatal("Error loading .env file:", err)
-		os.Exit(1)
-	}
-
-	status := make(chan bool)
-	go InitDatabase(status)
-	if success := <-status; !success {
-		t.Fatal("failed to initialize database")
-	}
-}
-
-func teardownTestDatabase(t *testing.T) {
-	if err := CloseDatabase(); err != nil {
-		t.Fatalf("failed to close database: %v", err)
-	}
-}
-
 func TestCreateTask(t *testing.T) {
-	setupTestDatabase(t)
-	defer teardownTestDatabase(t)
+	utils.SetupTestDatabase(t)
+	defer utils.TeardownTestDatabase(t)
 
 	taskName := "TestTask"
-	idTask, err := CreateTask(taskName)
+	idTask, err := database.CreateTask(taskName)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -40,88 +19,97 @@ func TestCreateTask(t *testing.T) {
 		t.Fatal("expected valid task ID, got 0")
 	}
 
-	DeleteTask(idTask)
+	err = database.DeleteTask(idTask)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
 }
 
 func TestGetTaskByName(t *testing.T) {
-	setupTestDatabase(t)
-	defer teardownTestDatabase(t)
+	utils.SetupTestDatabase(t)
+	defer utils.TeardownTestDatabase(t)
 
 	taskName := "TestTask"
-	_, err := CreateTask(taskName)
+	_, err := database.CreateTask(taskName)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	task, err := GetTaskByName(taskName)
+	task, err := database.GetTaskByName(taskName)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 	if task.Name != taskName {
 		t.Fatalf("expected task name %s, got %s", taskName, task.Name)
 	}
-	DeleteTask(task.Id)
+	err = database.DeleteTask(task.Id)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
 }
 
 func TestUpdateTaskStatus(t *testing.T) {
-	setupTestDatabase(t)
-	defer teardownTestDatabase(t)
+	utils.SetupTestDatabase(t)
+	defer utils.TeardownTestDatabase(t)
 
 	taskName := "TestTask"
-	idTask, err := CreateTask(taskName)
+	idTask, err := database.CreateTask(taskName)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	err = UpdateTaskStatus(idTask, true)
+	err = database.UpdateTaskStatus(idTask, true)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	task, err := GetTaskByName(taskName)
+	task, err := database.GetTaskByName(taskName)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 	if !task.Done {
 		t.Fatal("expected task to be marked as done")
 	}
-	DeleteTask(idTask)
+	err = database.DeleteTask(idTask)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
 }
 
 func TestDeleteTask(t *testing.T) {
-	setupTestDatabase(t)
-	defer teardownTestDatabase(t)
+	utils.SetupTestDatabase(t)
+	defer utils.TeardownTestDatabase(t)
 
 	taskName := "TestTask"
-	idTask, err := CreateTask(taskName)
+	idTask, err := database.CreateTask(taskName)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	err = DeleteTask(idTask)
+	err = database.DeleteTask(idTask)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	_, err = GetTaskByName(taskName)
+	_, err = database.GetTaskByName(taskName)
 	if err == nil {
 		t.Fatal("expected error for non-existent task, got nil")
 	}
 }
 
 func TestGetAllTasks(t *testing.T) {
-	setupTestDatabase(t)
-	defer teardownTestDatabase(t)
+	utils.SetupTestDatabase(t)
+	defer utils.TeardownTestDatabase(t)
 
 	taskNames := []string{"Task1", "Task2", "Task3"}
 	for _, name := range taskNames {
-		_, err := CreateTask(name)
+		_, err := database.CreateTask(name)
 		if err != nil {
 			t.Fatalf("expected no error, got %v", err)
 		}
 	}
 
-	tasks, err := GetAllTasks()
+	tasks, err := database.GetAllTasks()
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -130,6 +118,9 @@ func TestGetAllTasks(t *testing.T) {
 	}
 
 	for _, task := range tasks {
-		DeleteTask(task.Id)
+		err = database.DeleteTask(task.Id)
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	}
 }
