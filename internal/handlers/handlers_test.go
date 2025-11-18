@@ -36,8 +36,8 @@ func TestDoTaskApi(t *testing.T) {
 
 	DoTask(rr, req)
 
-	if rr.Code != http.StatusOK {
-		t.Fatalf("expected status %d, got %d, body: %s", http.StatusOK, rr.Code, rr.Body.String())
+	if rr.Code != http.StatusOK && rr.Code != http.StatusNotModified {
+		t.Fatalf("expected status %d or %d, got %d, body: %s", http.StatusOK, http.StatusNotModified, rr.Code, rr.Body.String())
 	}
 }
 

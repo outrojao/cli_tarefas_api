@@ -63,7 +63,7 @@ func DoTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if t.Done {
-		http.Error(w, "task already done", http.StatusBadRequest)
+		http.Error(w, "task already done", http.StatusNotModified)
 		return
 	}
 
