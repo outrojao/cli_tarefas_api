@@ -3,16 +3,15 @@ package utils
 import (
 	"cli_tasks_api/internal/database"
 	"log"
-	"os"
 	"testing"
 
 	"github.com/joho/godotenv"
 )
 
 func SetupTestDatabase(t *testing.T) {
-	if err := godotenv.Load("../../configs/.env"); err != nil {
-		log.Fatal("Error loading .env file:", err)
-		os.Exit(1)
+	if err := godotenv.Load("../../configs/database.env"); err != nil {
+		log.Println("Error loading .env file:", err)
+		return
 	}
 
 	status := make(chan bool)
