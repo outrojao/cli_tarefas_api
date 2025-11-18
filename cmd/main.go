@@ -14,8 +14,9 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("configs/.env"); err != nil {
-		log.Fatal("Error loading .env file:", err)
+	if err := godotenv.Load("configs/database.env"); err != nil {
+		log.Println("Error loading .env file:", err)
+		return
 	}
 
 	initializeStatus := make(chan bool, 2)
