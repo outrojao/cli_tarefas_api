@@ -1,3 +1,7 @@
+## Autorização
+
+A API faz o uso de Json Web Token (JWT) para a validação das requisições.
+
 ## 🌐 API Endpoints
 
 - `POST /create` - Criar nova tarefa
