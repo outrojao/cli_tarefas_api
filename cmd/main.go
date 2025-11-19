@@ -18,6 +18,10 @@ func main() {
 		log.Println("Error loading .env file:", err)
 		return
 	}
+	if err := godotenv.Load("configs/jwt.env"); err != nil {
+		log.Println("Error loading .env file:", err)
+		return
+	}
 
 	initializeStatus := make(chan bool, 2)
 	go database.InitDatabase(initializeStatus)
