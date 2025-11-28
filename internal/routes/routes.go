@@ -11,5 +11,5 @@ func InitRoutes() {
 	http.HandleFunc("/do/", middleware.AuthMiddleware(handlers.DoTask))
 	http.HandleFunc("/remove/", middleware.AuthMiddleware(handlers.RemoveTask))
 	http.HandleFunc("/list", middleware.AuthMiddleware(handlers.ListTasks))
-	http.HandleFunc("/health", middleware.AuthMiddleware(handlers.HealthCheck))
+	http.HandleFunc("/health", handlers.HealthCheck)
 }
