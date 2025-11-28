@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"cli_tasks_api/internal/auth"
 	"cli_tasks_api/internal/database"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -14,19 +12,6 @@ import (
 func CreateTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	if r.Header.Get("Authorization") == "" {
-		http.Error(w, "missing authorization header", http.StatusUnauthorized)
-		return
-	}
-
-	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	fmt.Println(tokenString)
-	valid, err := auth.VerifyToken(tokenString)
-	if err != nil || !valid {
-		http.Error(w, "invalid token", http.StatusUnauthorized)
 		return
 	}
 
@@ -59,19 +44,6 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 func DoTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	if r.Header.Get("Authorization") == "" {
-		http.Error(w, "missing authorization header", http.StatusUnauthorized)
-		return
-	}
-
-	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	fmt.Println(tokenString)
-	valid, err := auth.VerifyToken(tokenString)
-	if err != nil || !valid {
-		http.Error(w, "invalid token", http.StatusUnauthorized)
 		return
 	}
 
@@ -110,19 +82,6 @@ func RemoveTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Header.Get("Authorization") == "" {
-		http.Error(w, "missing authorization header", http.StatusUnauthorized)
-		return
-	}
-
-	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	fmt.Println(tokenString)
-	valid, err := auth.VerifyToken(tokenString)
-	if err != nil || !valid {
-		http.Error(w, "invalid token", http.StatusUnauthorized)
-		return
-	}
-
 	taskName := strings.TrimPrefix(r.URL.Path, "/remove/")
 	if taskName == "" || taskName == r.URL.Path {
 		http.Error(w, "Missing task_name parameter", http.StatusBadRequest)
@@ -155,14 +114,6 @@ func ListTasks(w http.ResponseWriter, r *http.Request) {
 
 	if r.Header.Get("Authorization") == "" {
 		http.Error(w, "missing authorization header", http.StatusUnauthorized)
-		return
-	}
-
-	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	fmt.Println(tokenString)
-	valid, err := auth.VerifyToken(tokenString)
-	if err != nil || !valid {
-		http.Error(w, "invalid token", http.StatusUnauthorized)
 		return
 	}
 
