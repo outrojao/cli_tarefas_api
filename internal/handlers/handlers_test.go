@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"cli_tasks_api/internal/middleware"
 	"cli_tasks_api/internal/utils"
 	"net/http"
 	"net/http/httptest"
@@ -11,10 +12,17 @@ import (
 
 func TestCreateTaskApi(t *testing.T) {
 	utils.SetupTestDatabase(t)
+	utils.SetupAuthEnv(t)
 	defer utils.TeardownTestDatabase(t)
 	payload := `{"task_name":"TestTask"}`
 	req := httptest.NewRequest(http.MethodPost, "/create", strings.NewReader(payload))
 	req.Header.Set("Content-Type", "application/json")
+	jwtToken, err := middleware.CreateToken()
+	if err != nil {
+		t.Fatal("failed to create JWT token:", err)
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+jwtToken)
 	rr := httptest.NewRecorder()
 
 	CreateTask(rr, req)
@@ -26,12 +34,19 @@ func TestCreateTaskApi(t *testing.T) {
 
 func TestDoTaskApi(t *testing.T) {
 	utils.SetupTestDatabase(t)
+	utils.SetupAuthEnv(t)
 	defer utils.TeardownTestDatabase(t)
 	taskName := "TestTask"
 
 	taskNameEscaped := url.PathEscape(taskName)
 	url := "/do/" + taskNameEscaped
 	req := httptest.NewRequest(http.MethodPut, url, nil)
+	jwtToken, err := middleware.CreateToken()
+	if err != nil {
+		t.Fatal("failed to create JWT token:", err)
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+jwtToken)
 	rr := httptest.NewRecorder()
 
 	DoTask(rr, req)
@@ -43,12 +58,19 @@ func TestDoTaskApi(t *testing.T) {
 
 func TestRemoveTaskApi(t *testing.T) {
 	utils.SetupTestDatabase(t)
+	utils.SetupAuthEnv(t)
 	defer utils.TeardownTestDatabase(t)
 	taskName := "TestTask"
 
 	taskNameEscaped := url.PathEscape(taskName)
 	url := "/remove/" + taskNameEscaped
 	req := httptest.NewRequest(http.MethodDelete, url, nil)
+	jwtToken, err := middleware.CreateToken()
+	if err != nil {
+		t.Fatal("failed to create JWT token:", err)
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+jwtToken)
 	rr := httptest.NewRecorder()
 
 	RemoveTask(rr, req)
@@ -60,8 +82,15 @@ func TestRemoveTaskApi(t *testing.T) {
 
 func TestListTasksApi(t *testing.T) {
 	utils.SetupTestDatabase(t)
+	utils.SetupAuthEnv(t)
 	defer utils.TeardownTestDatabase(t)
 	req := httptest.NewRequest(http.MethodGet, "/list", nil)
+	jwtToken, err := middleware.CreateToken()
+	if err != nil {
+		t.Fatal("failed to create JWT token:", err)
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+jwtToken)
 	rr := httptest.NewRecorder()
 
 	ListTasks(rr, req)

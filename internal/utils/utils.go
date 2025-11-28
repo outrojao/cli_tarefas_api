@@ -26,3 +26,10 @@ func TeardownTestDatabase(t *testing.T) {
 		t.Fatalf("failed to close database: %v", err)
 	}
 }
+
+func SetupAuthEnv(t *testing.T) {
+	if err := godotenv.Load("../../configs/jwt.env"); err != nil {
+		log.Println("Error loading .env file:", err)
+		return
+	}
+}
